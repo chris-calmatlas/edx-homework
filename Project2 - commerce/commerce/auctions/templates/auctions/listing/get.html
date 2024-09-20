@@ -1,0 +1,82 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>{{ listing.title }}</h2>
+    
+    {% if userIsOwner %}
+    <p class="alert alert-warning">This is your listing</p>
+    <ul class="nav">
+        {% if listing.isActive %}
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'closeListing' listing.id %}">Close this listing</a>
+        </li>
+        {% endif %}
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'deleteListing' listing.id %}">Delete this listing</a>
+        </li>
+    </ul>    
+    {% endif %}
+    <form action="{% url 'toggleWatchlist' listing.id %}" method="post">
+        {% csrf_token %}
+        {{ watchlistForm.checked.as_hidden }}
+        {% if onWatchList %}
+            <button type="submit" class="btn btn-primary mb-3">Remove from watchlist</button>
+        {% else %}
+            <button type="submit" class="btn btn-primary mb-3">Add to watchlist</button>
+        {% endif %}
+    </form>
+    {% if listing.isActive is False %}
+        {% if listing.winningBid %}
+            {% if userIsWinner %}
+                <p class="alert alert-success">You have won this auction</p>
+            {% else %}
+                <p class="alert alert-primary">{{ listing.winningBid.user }} has won this auction</p>
+            {% endif %}
+        {% else %}
+            <p class="alert alert-primary">This listing was closed without a winner.</p>
+        {% endif %}
+    {% endif %}
+    
+    <div class="mb-3">
+        <h4>Starting Bid: ${{ listing.startingAmount }}</h4>
+        {% if listing.winningBid %}
+            <h4>Current Bid - ${{ listing.winningBid.amount }} </h4>
+        {% endif %}
+    </div>
+
+    {% if listing.isActive %}
+        <h5>Bid on this item</h5>
+        {% if userIsWinner %}
+            <p class="alert alert-primary">You have the highest bid so far<p>
+        {% endif %}
+        <form action="{% url 'createBid' listing.id %}" method="post">
+            {% csrf_token %}
+            {{ bidForm }}
+            <button type="submit" class="btn btn-primary mb-3">Submit Bid</button>
+        </form>  
+    {% endif %}
+    
+
+    {% if listing.imageUrl %}
+        <img width="50%" src="{{ listing.imageUrl }}">
+    {% endif %}
+
+    <h4>Description</h4>
+    <p>{{ listing.description }}</p>
+    {% if listing.category is not None %}
+        <p>Category: <a href="{% url 'listingByCategory' listing.category %}">{{ listing.category }}</a></p>
+    {% endif %}
+    <h4>Comments</h4>
+    <form action="{% url 'createComment' listing.id %}" method="post">
+        {% csrf_token %}
+        {{ commentForm }}
+        <button type="submit" class="btn btn-primary mb-3">Comment</button>
+    </form>
+    {% for comment in comments %}
+    <div class="border-top">
+        <p><strong>On {{ comment.createdOn }}, {{ comment.user }} said:</strong></p>
+        <p>{{ comment.content }}</p>
+    </div>
+    {% endfor %}
+
+{% endblock %}

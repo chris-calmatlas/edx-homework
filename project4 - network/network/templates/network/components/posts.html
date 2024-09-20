@@ -1,0 +1,52 @@
+{% for post in posts %}
+<div class="card m-3 post-card">
+    <div class="card-header">
+        <span>On {{ post.createdOn }}
+            <a href="{% url 'profile' post.owner.id %}">
+            {% if user == post.owner %}
+                You
+            {% else %}
+                {{ post.owner }}
+            {% endif %}
+            </a> said:
+        </span>
+    </div>
+    <div class="card-body">
+        <p class="card-text post-content">{{ post.content }}</p>
+    </div>
+    <div class="card-footer text-muted postDetails">
+        <div>Likes: <span class="like-count">{{ post.likes.count }}</span></div>
+        {% if user.is_authenticated %}
+            {% if user in post.likes.all %}
+                <button class="like-button" data-postid="{{ post.id }}">Liked</button>
+            {% else %}
+                <button class="like-button" data-postid="{{ post.id }}">Like</button>
+            {% endif %}
+            {% if user == post.owner %}
+                <button class="edit-button">Edit</button>
+                <button class="save-button" data-postid="{{ post.id }}" hidden>Save</button>
+                <button class="cancel-button" hidden>Cancel</button>
+            {% endif %}
+        {% else %}
+            <a href="{% url 'login' %}">Login to like</a>Your location
+        {% endif %}
+    </div>
+</div>
+{% empty %}
+    <p>Nothing here</p>
+{% endfor %}
+
+<nav aria-label="Page navigation">
+    <ul class="pagination">
+        {% if currentPage > 1 %}
+            <li class="page-item">
+                <a class="page-link" href="{{ request.path }}?page={{ currentPage|add:-1 }}">Previous Page</a>
+            </li>
+        {% endif %}
+        {% if pageCount >= currentPage %}
+            <li class="page-item">
+                <a class="page-link" href="{{ request.path }}?page={{ currentPage|add:1 }}">Next Page</a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>

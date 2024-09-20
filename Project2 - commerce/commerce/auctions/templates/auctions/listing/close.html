@@ -1,0 +1,22 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Are you sure you want to close {{ listing.title }}?</h2>
+    {% if listing.winningBid %}
+    <p>The highest bid is ${{ listing.winningBid.amount }} made by {{ listing.winningBid.user }}.</p>
+    {% else %}
+    <p>Nobody has won this bid.</p>
+    {% endif%}
+    <form action="{% url 'closeListing' listing.id %}" method="post">
+        {% csrf_token %}
+        {{ ConfirmForm }}
+        <button type="submit" class="btn btn-primary mb-3">Close</button>
+    </form>
+
+    {% if listing.imageUrl %}
+        <img src="{{ listing.imageUrl }}">
+    {% endif %}
+
+    <h4>Description</h4>
+    <p>{{ listing.description }}</p>
+{% endblock %}

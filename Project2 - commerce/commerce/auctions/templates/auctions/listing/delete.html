@@ -1,0 +1,18 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Are you sure you want to delete {{ listing.title }}?</h2>
+    <p>This will remove the listing without declaring a winner.</p>
+    <form action="{% url 'deleteListing' listing.id %}" method="post">
+        {% csrf_token %}
+        {{ ConfirmForm }}
+        <button type="submit" class="btn btn-primary mb-3">Delete</button>
+    </form>
+
+    {% if listing.imageUrl %}
+        <img src="{{ listing.imageUrl }}">
+    {% endif %}
+
+    <h4>Description</h4>
+    <p>{{ listing.description }}</p>
+{% endblock %}

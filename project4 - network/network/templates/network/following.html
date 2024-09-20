@@ -1,0 +1,14 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+    {% if user.is_authenticated %}
+    <form action="{% url 'newPost' %}" method="post">
+        {% csrf_token %}
+        {{ postForm }}
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    {% endif %}
+    <h3 class="postList">Following</h3>
+    {% include 'network/components/posts.html' %}
+
+{% endblock %}

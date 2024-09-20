@@ -1,0 +1,18 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+    <h1>{{ target}}</h1>
+    {% if user != target %}
+        {% if user in target.followers.all %}
+            <button class="follow-button" data-targetid="{{ target.id }}">Unfollow</button>
+        {% else %}
+            <button class="follow-button" data-targetid="{{ target.id }}">follow</button>
+        {% endif %}
+    {% endif %}
+    <div>Followers: <span class="follower-count">{{ target.followers.all.count }}</span></div>
+    <div>Following: <span class="following-count">{{ target.following.all.count }}</span></div>
+    
+    <h3 class="postList">Your Posts</h3>
+    {% include 'network/components/posts.html' %}
+
+{% endblock %}
